@@ -371,6 +371,10 @@ body{background:#000;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',san
           <div class="res-sub" id="res-sub"></div>
         </div>
         <div class="podium" id="podium"></div>
+        <div class="card" style="margin-bottom:20px">
+        <div class="label">Stats en direct</div>
+        <div id="live-stats"></div>
+        </div>
         <div id="stats-list"></div>
         <div class="recap-card">
           <div class="recap-header">Détail par question</div>
@@ -865,6 +869,66 @@ function copyLink(){
   else{var t=document.createElement("textarea");t.value=url;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);}
   var btn=document.querySelector(".copy-btn");btn.textContent="Copié !";setTimeout(function(){btn.textContent="Copier";},2000);
 }
+function computeLiveStats(session){
+  var stats = {
+    totalAnswers: 0,
+    players: {},
+    ranked: [],
+    leader: null
+  };
+
+  session.participants.forEach(function(p){
+    stats.players[p] = {name:p, count:0};
+  });
+
+  Object.values(session.answers || {}).forEach(function(arr){
+    arr.forEach(function(a){
+      if(a.voted && stats.players[a.voted]){
+        stats.players[a.voted].count++;
+        stats.totalAnswers++;
+      }
+    });
+  });
+
+  stats.ranked = Object.values(stats.players).sort(function(a,b){
+    return b.count - a.count;
+  });
+
+  stats.leader = stats.ranked[0] || null;
+
+  return stats;
+}
+function renderLiveStats(){
+  if(!currentSession) return;
+
+  var stats = computeLiveStats(currentSession);
+  var el = document.getElementById("live-stats");
+
+  if(!stats.leader){
+    el.innerHTML = "<div style='opacity:.4'>Aucune réponse pour l’instant</div>";
+    return;
+  }
+
+  var html = "";
+
+  // leader
+  html += "<div style='margin-bottom:14px;font-size:15px'>";
+  html += "<span style='color:#C8F135;font-weight:700'>" + stats.leader.name + "</span>";
+  html += " — " + stats.leader.count + " vote" + (stats.leader.count>1?"s":"");
+  html += "</div>";
+
+  // classement
+  html += stats.ranked.map(function(p,i){
+    return "<div class='stat-row'>"
+      +"<div class='stat-rank'>"+(i+1)+"</div>"
+      +"<div class='stat-av'>"+p.name.slice(0,2).toUpperCase()+"</div>"
+      +"<div class='stat-name'>"+p.name+"</div>"
+      +"<div class='stat-count'>"+p.count+"</div>"
+    +"</div>";
+  }).join("");
+
+  el.innerHTML = html;
+}
 
 /* ── RESULTS ── */
 function showResultsScreen(){
@@ -929,6 +993,7 @@ function showResultsScreen(){
     +"</div>";
   }).join("");
 
+  renderLiveStats();
   showScreen("screen-results");
 }
 
