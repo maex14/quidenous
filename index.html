@@ -820,7 +820,38 @@ function goHome(){
 }
 
 /* ════════ PARTIE EN COURS (HOME) ════════ */
+
+/* Écrit l'ID de la session active dans le bin global → visible par tous */
+function setGlobalActiveSession(binId){
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId)return;
+    apiRead(gBinId,function(err,stats){
+      if(err||!stats)return;
+      stats.activeSessionId=binId;
+      apiUpdate(gBinId,stats,function(){});
+    });
+  });
+}
+
+/* Lit depuis le bin global (partagé), puis charge la session correspondante */
 function loadActiveSession(){
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId){_loadActiveSessionLocal();return;}
+    apiRead(gBinId,function(err,stats){
+      if(err||!stats||!stats.activeSessionId){_loadActiveSessionLocal();return;}
+      var binId=stats.activeSessionId;
+      localStorage.setItem("qdns_active_session",binId);
+      apiRead(binId,function(err2,data){
+        if(err2||!data||!data.name){hideActiveSession();return;}
+        data.binId=binId;
+        renderActiveSession(data);
+      });
+    });
+  });
+}
+
+/* Fallback sur le localStorage si le global bin est inaccessible */
+function _loadActiveSessionLocal(){
   var binId=localStorage.getItem("qdns_active_session");
   if(!binId){hideActiveSession();return;}
   apiRead(binId,function(err,data){
@@ -997,6 +1028,7 @@ function createSession(){
     var binId=res.metadata.id;session.binId=binId;currentSession=session;
     addLocalSession(session);
     localStorage.setItem("qdns_active_session",binId);
+    setGlobalActiveSession(binId);
     showWaitingScreen(true);
   });
 }
@@ -1125,8 +1157,8 @@ function submitAnswers(){
       if(err2){alert("Erreur lors de la sauvegarde.");showScreen("screen-game");return;}
       currentSession=fresh;
       localStorage.setItem("qdns_played_"+currentSession.binId,myPseudo);
-      /* Marquer comme session active pour la home */
       localStorage.setItem("qdns_active_session",currentSession.binId);
+      setGlobalActiveSession(currentSession.binId);
       updateGlobalStats(currentSession,myAnswers);
       showResultsScreen();
     });
