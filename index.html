@@ -608,6 +608,8 @@ function localSessions(){try{return JSON.parse(localStorage.getItem("qdns_v4_ses
 function saveLocalSessions(s){try{localStorage.setItem("qdns_v4_sessions",JSON.stringify(s))}catch(e){}}
 function addLocalSession(sess){
   var s=localSessions();
+  /* Déduplique : retire l'entrée existante si même binId */
+  s=s.filter(function(x){return x.binId!==sess.binId;});
   s.unshift({binId:sess.binId,name:sess.name,code:sess.code,createdAt:sess.createdAt,participants:sess.participants});
   if(s.length>30)s.pop();
   saveLocalSessions(s);
@@ -912,6 +914,8 @@ function loadSession(binId){
   apiRead(binId,function(err,data){
     if(err||!data||!data.name){showScreen("screen-home");alert("Sondage introuvable.");return;}
     currentSession=data;currentSession.binId=binId;
+    /* Sauvegarder dans les recents pour tout le monde (créateur ou rejoignant) */
+    addLocalSession(currentSession);
     showJoinScreen();
   });
 }
