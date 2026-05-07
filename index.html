@@ -315,6 +315,45 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
 .active-player-chip{font-size:12px;padding:4px 11px;border-radius:999px;font-weight:600}
 .active-player-chip.done{background:rgba(200,241,53,0.12);color:#C8F135;border:0.5px solid rgba(200,241,53,0.25)}
 .active-player-chip.wait{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:0.5px solid rgba(255,255,255,0.1)}
+/* SUGGESTIONS */
+.sug-wrap{background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.09);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.sug-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid rgba(255,255,255,0.07);cursor:pointer;user-select:none}
+.sug-header:hover{background:rgba(255,255,255,0.03)}
+.sug-title{font-size:12px;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:1.5px;text-transform:uppercase}
+.sug-meta{font-size:11px;color:rgba(255,255,255,0.25);font-weight:500;display:flex;align-items:center;gap:8px}
+.sug-chevron{font-size:14px;color:rgba(255,255,255,0.25);transition:transform .2s}
+.sug-chevron.open{transform:rotate(90deg)}
+.sug-body{display:none}
+.sug-body.open{display:block}
+.sug-list{display:flex;flex-direction:column;max-height:280px;overflow-y:auto;padding:6px 8px}
+.sug-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;transition:background .12s;border:0.5px solid transparent}
+.sug-item:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.1)}
+.sug-emoji-d{font-size:16px;flex-shrink:0;width:26px;text-align:center}
+.sug-text-d{flex:1;font-size:13px;color:rgba(255,255,255,0.75);font-weight:500;line-height:1.3}
+.sug-add-btn{width:26px;height:26px;border-radius:7px;border:0.5px solid rgba(200,241,53,0.35);background:rgba(200,241,53,0.08);color:#C8F135;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;line-height:1}
+.sug-item.used{opacity:.38;pointer-events:none}
+.sug-empty{padding:18px;text-align:center;font-size:13px;color:rgba(255,255,255,0.25);font-weight:500}
+/* SKELETON LOADING */
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel{background:linear-gradient(90deg,rgba(255,255,255,0.06) 25%,rgba(255,255,255,0.11) 50%,rgba(255,255,255,0.06) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;border-radius:8px}
+.skel-card{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:10px}
+.skel-h{height:16px;margin-bottom:10px;width:55%}
+.skel-h-sm{height:11px;margin-bottom:7px;width:40%}
+.skel-h-xs{height:10px;width:70%}
+.skel-active{background:rgba(200,241,53,0.05);border:0.5px solid rgba(200,241,53,0.12);border-radius:18px;padding:22px}
+.skel-row{display:flex;gap:8px;margin:12px 0}
+.skel-chip{height:28px;border-radius:8px;flex:1}
+/* LOADING SCREEN */
+.load-screen-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:0}
+.load-app-name{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:16px}
+.load-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-1.5px;margin-bottom:20px}
+.load-title span{color:#C8F135}
+.load-dots{display:flex;gap:7px}
+.load-dot{width:7px;height:7px;border-radius:50%;background:#C8F135;animation:dotpulse 1.2s infinite}
+.load-dot:nth-child(2){animation-delay:.18s}
+.load-dot:nth-child(3){animation-delay:.36s}
+@keyframes dotpulse{0%,80%,100%{opacity:.2;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
+.load-msg{font-size:13px;color:rgba(255,255,255,0.3);font-weight:500;margin-top:18px}
 @media(max-width:700px){
   .home-grid{grid-template-columns:1fr}
   .hero-title{font-size:58px;letter-spacing:-3px}
@@ -412,6 +451,21 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
             </div>
             <div class="qe-list" id="qe-list"></div>
             <button class="qe-add" onclick="addQuestion()">+ Ajouter une question</button>
+          </div>
+        </div>
+        <!-- SUGGESTIONS DE QUESTIONS -->
+        <div class="sug-wrap" id="sug-wrap" style="display:none">
+          <div class="sug-header" onclick="toggleSuggestions()">
+            <div class="sug-title">Questions déjà posées</div>
+            <div class="sug-meta">
+              <span id="sug-count-lbl"></span>
+              <span class="sug-chevron" id="sug-chevron">›</span>
+            </div>
+          </div>
+          <div class="sug-body" id="sug-body">
+            <div class="sug-list" id="sug-list">
+              <div class="sug-empty"><div class="spinner" style="width:18px;height:18px;border-width:2px;margin:0 auto 8px"></div>Chargement...</div>
+            </div>
           </div>
         </div>
         <button class="btn-lime" onclick="createSession()">Créer le sondage →</button>
@@ -548,9 +602,15 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
 
     <!-- LOADING -->
     <div id="screen-loading" class="screen">
-      <div class="loading-wrap">
-        <div class="spinner"></div>
-        <p id="loading-msg">Chargement...</p>
+      <div class="load-screen-inner">
+        <div class="load-app-name">Qui de nous</div>
+        <div class="load-title">Juste un<br><span>instant</span></div>
+        <div class="load-dots">
+          <div class="load-dot"></div>
+          <div class="load-dot"></div>
+          <div class="load-dot"></div>
+        </div>
+        <p class="load-msg" id="loading-msg">Chargement...</p>
       </div>
     </div>
 
@@ -604,6 +664,33 @@ var currentStatsTab='ranking';
 var currentAdminTab='history';
 var _commentsCache=[];
 
+/* ════════ API REQUEST CACHE + DEDUPLICATION ════════ */
+/* Évite les appels dupliqués : si 2 fonctions demandent le même bin simultanément,
+   une seule requête HTTP part et les deux callbacks reçoivent la réponse */
+var _pendingReads={};
+var _readCache={};
+var CACHE_TTL=8000; /* 8s — les polls se font de toute façon toutes les 5-8s */
+
+function apiReadCached(binId,cb,forceRefresh){
+  var cached=_readCache[binId];
+  if(!forceRefresh&&cached&&(Date.now()-cached.t)<CACHE_TTL){
+    setTimeout(function(){cb(null,cached.d);},0);
+    return;
+  }
+  if(_pendingReads[binId]){
+    _pendingReads[binId].push(cb);
+    return;
+  }
+  _pendingReads[binId]=[cb];
+  apiRead(binId,function(err,data){
+    var cbs=_pendingReads[binId]||[];
+    delete _pendingReads[binId];
+    if(!err&&data)_readCache[binId]={d:data,t:Date.now()};
+    cbs.forEach(function(fn){fn(err,data);});
+  });
+}
+function invalidateCache(binId){delete _readCache[binId];}
+
 /* ════════ LOCAL STORAGE ════════ */
 function localSessions(){try{return JSON.parse(localStorage.getItem("qdns_v4_sessions")||"[]")}catch(e){return[]}}
 function saveLocalSessions(s){try{localStorage.setItem("qdns_v4_sessions",JSON.stringify(s))}catch(e){}}
@@ -627,7 +714,10 @@ function apiRead(binId,cb){
 }
 function apiUpdate(binId,data,cb){
   fetch(JSONBIN_BASE+"/"+binId,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":JSONBIN_KEY},body:JSON.stringify(data)})
-    .then(function(r){return r.json()}).then(function(j){cb(null,j)}).catch(function(e){cb(e)});
+    .then(function(r){return r.json()}).then(function(j){
+      invalidateCache(binId); /* Les données ont changé — invalider le cache local */
+      cb(null,j);
+    }).catch(function(e){cb(e)});
 }
 
 /* ════════ GLOBAL BIN ════════ */
@@ -835,13 +925,17 @@ function setGlobalActiveSession(binId){
 
 /* Lit depuis le bin global (partagé), puis charge la session correspondante */
 function loadActiveSession(){
+  /* Skeleton immédiat sur la card active */
+  var card=document.getElementById("active-sess-card");
+  if(card)card.innerHTML=skeletonActive();
+  document.getElementById("active-sess-wrap").style.display="block";
   getOrCreateGlobalBin(function(gBinId){
     if(!gBinId){_loadActiveSessionLocal();return;}
-    apiRead(gBinId,function(err,stats){
+    apiReadCached(gBinId,function(err,stats){
       if(err||!stats||!stats.activeSessionId){_loadActiveSessionLocal();return;}
       var binId=stats.activeSessionId;
       localStorage.setItem("qdns_active_session",binId);
-      apiRead(binId,function(err2,data){
+      apiReadCached(binId,function(err2,data){
         if(err2||!data||!data.name){hideActiveSession();return;}
         data.binId=binId;
         renderActiveSession(data);
@@ -920,19 +1014,34 @@ function openLiveResults(binId){
     showResultsScreen();
   });
 }
+function skeletonSessions(){
+  return [1,2,3].map(function(){
+    return "<div class='skel-card'>"
+      +"<div class='skel skel-h'></div>"
+      +"<div class='skel skel-h-sm'></div>"
+      +"<div class='skel skel-h-xs'></div>"
+    +"</div>";
+  }).join("");
+}
+function skeletonActive(){
+  return "<div class='skel-active'>"
+    +"<div class='skel skel-h' style='width:40%;margin-bottom:16px'></div>"
+    +"<div class='skel-row'><div class='skel skel-chip'></div><div class='skel skel-chip'></div><div class='skel skel-chip'></div></div>"
+    +"<div class='skel-row'><div class='skel skel-chip' style='flex:none;width:70px'></div><div class='skel skel-chip' style='flex:none;width:80px'></div><div class='skel skel-chip' style='flex:none;width:60px'></div></div>"
+    +"<div class='skel' style='height:48px;border-radius:12px;margin-top:8px'></div>"
+  +"</div>";
+}
+
 /* Charge les sondages depuis le bin global — visible par tous les visiteurs */
 function renderLocalSessions(){
   var el=document.getElementById("session-list");
-  el.innerHTML="<div class='loading-wrap' style='padding:24px'><div class='spinner'></div></div>";
+  /* Skeleton immédiat */
+  el.innerHTML=skeletonSessions();
   getOrCreateGlobalBin(function(gBinId){
-    if(!gBinId){
-      el.innerHTML="<div class='no-sessions'>Impossible de charger les sondages.</div>";
-      return;
-    }
-    apiRead(gBinId,function(err,stats){
+    if(!gBinId){el.innerHTML="<div class='no-sessions'>Impossible de charger les sondages.</div>";return;}
+    apiReadCached(gBinId,function(err,stats){
       if(err||!stats||!stats.sessions||!stats.sessions.length){
-        el.innerHTML="<div class='no-sessions'>Aucun sondage récent — créez le premier !</div>";
-        return;
+        el.innerHTML="<div class='no-sessions'>Aucun sondage récent — créez le premier !</div>";return;
       }
       var medals=["🥇","🥈","🥉"];
       el.innerHTML=stats.sessions.slice(0,15).map(function(s){
@@ -941,7 +1050,6 @@ function renderLocalSessions(){
         var answered=s.scores?Object.keys(s.scores).length:0;
         var total=(s.participants||[]).length;
         var pct=total?Math.round(answered/total*100):0;
-        /* Top 3 scores */
         var sortedScores=s.scores?Object.entries(s.scores).sort(function(a,b){return b[1]-a[1];}).slice(0,3):[];
         var scoresHtml=sortedScores.length
           ?sortedScores.map(function(e,i){return "<span style='font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;margin-right:8px'>"+(medals[i]||"·")+" "+e[0]+" ("+e[1]+")</span>";}).join("")
@@ -954,7 +1062,8 @@ function renderLocalSessions(){
               +"<span class='si-info'>"+total+" joueurs</span>"
               +"<span class='si-dot'></span>"
               +"<span class='si-info'>"+dateStr+"</span>"
-              +(pct<100?"<span class='si-dot'></span><span style='font-size:12px;color:#C8F135;font-weight:700'>"+pct+"% ont répondu</span>":"<span class='si-dot'></span><span style='font-size:12px;color:rgba(200,241,53,0.6);font-weight:700'>Terminé ✓</span>")
+              +(pct<100?"<span class='si-dot'></span><span style='font-size:12px;color:#C8F135;font-weight:700'>"+pct+"% ont répondu</span>"
+                       :"<span class='si-dot'></span><span style='font-size:12px;color:rgba(200,241,53,0.6);font-weight:700'>Terminé ✓</span>")
             +"</div>"
           +"</div>"
           +"<div class='si-arrow'>→</div>"
@@ -989,7 +1098,88 @@ function showCreate(){
   setNavDefault();
   document.getElementById("create-name").value="";
   document.getElementById("create-error").innerHTML="";
+  /* Réinitialiser le panneau suggestions */
+  document.getElementById("sug-wrap").style.display="none";
+  document.getElementById("sug-body").classList.remove("open");
+  document.getElementById("sug-chevron").classList.remove("open");
+  window._suggestions=[];
+  loadSuggestions();
   showScreen("screen-create");
+}
+
+/* ════════ SUGGESTIONS DE QUESTIONS ════════ */
+function toggleSuggestions(){
+  var body=document.getElementById("sug-body");
+  var chev=document.getElementById("sug-chevron");
+  var open=body.classList.toggle("open");
+  chev.classList.toggle("open",open);
+}
+
+function loadSuggestions(){
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId)return;
+    apiReadCached(gBinId,function(err,stats){
+      if(err||!stats)return;
+      /* Collecter les questions des sessions récentes, dédupliquées, dans l'ordre d'apparition */
+      var seen={};
+      var recent=[];
+      (stats.sessions||[]).forEach(function(s){
+        (s.questions||[]).forEach(function(q){
+          if(!q.text||!q.text.trim())return;
+          var key=q.emoji+"||"+q.text.trim();
+          if(!seen[key]){
+            seen[key]=true;
+            recent.push({emoji:q.emoji,text:q.text.trim()});
+          }
+        });
+      });
+      /* Également inclure les questions du stats.questions (avec scores) si pas déjà dedans */
+      Object.values(stats.questions||{}).forEach(function(q){
+        if(!q.text||!q.text.trim())return;
+        var key=q.emoji+"||"+q.text.trim();
+        if(!seen[key]){
+          seen[key]=true;
+          recent.push({emoji:q.emoji,text:q.text.trim()});
+        }
+      });
+      if(!recent.length)return;
+      window._suggestions=recent.slice(0,20);
+      var wrap=document.getElementById("sug-wrap");
+      var countLbl=document.getElementById("sug-count-lbl");
+      if(wrap)wrap.style.display="block";
+      if(countLbl)countLbl.textContent=window._suggestions.length+" disponibles";
+      renderSuggestions();
+    });
+  });
+}
+
+function renderSuggestions(){
+  var el=document.getElementById("sug-list");
+  if(!el||!window._suggestions)return;
+  el.innerHTML=window._suggestions.map(function(q,i){
+    var used=questions.some(function(eq){return eq.text.trim()===q.text;});
+    return "<div class='sug-item"+(used?" used":"")+"' onclick='addSuggestion("+i+")'>"
+      +"<div class='sug-emoji-d'>"+q.emoji+"</div>"
+      +"<div class='sug-text-d'>"+q.text+"</div>"
+      +"<div class='sug-add-btn'>"+(used?"✓":"+")+"</div>"
+    +"</div>";
+  }).join("");
+  if(!window._suggestions.length)el.innerHTML="<div class='sug-empty'>Aucune question posée auparavant.</div>";
+}
+
+function addSuggestion(idx){
+  var q=window._suggestions[idx];
+  if(!q)return;
+  if(questions.some(function(eq){return eq.text.trim()===q.text;}))return;
+  /* Remplace la première question vide, sinon ajoute à la fin */
+  var emptyIdx=questions.findIndex(function(eq){return !eq.text.trim();});
+  if(emptyIdx>=0)questions[emptyIdx]={emoji:q.emoji,text:q.text};
+  else questions.push({emoji:q.emoji,text:q.text});
+  renderQEditor();
+  renderSuggestions();
+  /* Scroll vers la question ajoutée */
+  var qList=document.getElementById("qe-list");
+  if(qList)setTimeout(function(){qList.scrollTop=qList.scrollHeight;},50);
 }
 document.getElementById("ptag-input").addEventListener("keydown",function(e){if(e.key==="Enter")addParticipant();});
 function addParticipant(){
@@ -1015,6 +1205,8 @@ function renderQEditor(){
       +"<input class='qe-input' value=\""+q.text.replace(/"/g,'&quot;')+"\" oninput=\"updateQ("+i+",this.value)\" placeholder='Écris ta question...' maxlength='80'/>"
       +"<button class='qe-del' onclick='removeQ("+i+")'>×</button></div>";
   }).join("");
+  /* Rafraîchir les suggestions pour mettre à jour les états "déjà ajoutée" */
+  if(window._suggestions&&window._suggestions.length)renderSuggestions();
 }
 function updateQ(i,val){questions[i].text=val;}
 function removeQ(i){if(questions.length<=3){alert("Minimum 3 questions.");return;}questions.splice(i,1);renderQEditor();}
@@ -1324,13 +1516,13 @@ function showResultsScreen(){
   if(window._liveResultsInterval)clearInterval(window._liveResultsInterval);
   window._liveResultsInterval=setInterval(function(){
     if(!currentSession||!currentSession.binId)return;
-    apiRead(currentSession.binId,function(err,fresh){
+    apiReadCached(currentSession.binId,function(err,fresh){
       if(err||!fresh)return;
       fresh.binId=currentSession.binId;
       currentSession=fresh;
       renderResultsCounts(fresh);
       renderRecap(fresh);
-    });
+    },true/* forceRefresh pour le polling live */);
   },5000);
   /* Polling commentaires toutes les 15s */
   if(window._commentInterval)clearInterval(window._commentInterval);
