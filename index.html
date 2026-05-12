@@ -1134,6 +1134,7 @@ function renderActiveSession(s){
     +"<button class='btn-lime' onclick=\""+btnAction+"\">"+btnLabel+"</button>"
     +"<button class='btn-danger' style='margin-top:8px' onclick='clearGlobalActiveSession()'>Changer de partie en cours</button>";
 }
+function openLiveResults(binId){
   setLoading("Chargement des résultats...");
   apiRead(binId,function(err,data){
     if(err||!data){showScreen("screen-home");alert("Impossible de charger les résultats.");return;}
