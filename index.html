@@ -969,10 +969,13 @@ function setGlobalActiveSession(binId){
 
 /* Lit depuis le bin global (partagé), puis charge la session correspondante */
 function loadActiveSession(){
-  /* Skeleton immédiat sur la card active */
-  var card=document.getElementById("active-sess-card");
-  if(card)card.innerHTML=skeletonActive();
-  document.getElementById("active-sess-wrap").style.display="block";
+  /* Ne pas afficher le skeleton si on n'a aucune session connue */
+  var hasKnown=GLOBAL_BIN_ID||localStorage.getItem(GLOBAL_BIN_KEY)||localStorage.getItem("qdns_global_bin_id");
+  if(hasKnown){
+    var card=document.getElementById("active-sess-card");
+    if(card)card.innerHTML=skeletonActive();
+    document.getElementById("active-sess-wrap").style.display="block";
+  }
   getOrCreateGlobalBin(function(gBinId){
     if(!gBinId){_loadActiveSessionLocal();return;}
     apiReadCached(gBinId,function(err,stats){
@@ -1043,11 +1046,94 @@ function renderActiveSession(s){
     +"<button class='btn-lime' onclick=\""+btnAction+"\">"+btnLabel+"</button>"
     +(answered.length<total?"<button class='btn-danger' style='margin-top:8px' onclick='clearActiveSession()'>Changer de partie en cours</button>":"");
 }
-function clearActiveSession(){
+function clearGlobalActiveSession(){
   localStorage.removeItem("qdns_active_session");
   hideActiveSession();
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId)return;
+    apiReadCached(gBinId,function(err,stats){
+      if(err||!stats)return;
+      stats.activeSessionId=null;
+      apiUpdate(gBinId,stats,function(){});
+    },true);
+  });
 }
-function openLiveResults(binId){
+function clearActiveSession(){clearGlobalActiveSession();}
+
+function isSessionExpired(s){
+  if(s.closed)return true;
+  if(s.expiresAt&&Date.now()>s.expiresAt)return true;
+  return false;
+}
+
+function timeRemaining(expiresAt){
+  var ms=expiresAt-Date.now();
+  if(ms<=0)return null;
+  var h=Math.floor(ms/3600000);
+  var m=Math.floor((ms%3600000)/60000);
+  if(h>0)return h+"h"+String(m).padStart(2,"0")+" restantes";
+  return m+" min restantes";
+}
+
+function renderActiveSession(s){
+  var wrap=document.getElementById("active-sess-wrap");
+  var card=document.getElementById("active-sess-card");
+  if(!wrap||!card)return;
+
+  /* Masquer si fermé ou expiré */
+  if(isSessionExpired(s)){
+    clearGlobalActiveSession();
+    return;
+  }
+
+  wrap.style.display="block";
+  var answered=Object.keys(s.answers||{});
+  var total=s.participants.length;
+  var pct=Math.round(answered.length/total*100);
+  var allDone=answered.length>=total;
+
+  /* Scores */
+  var counts={};s.participants.forEach(function(p){counts[p]=0;});
+  Object.values(s.answers||{}).forEach(function(arr){
+    arr.forEach(function(a){if(a.voted&&counts[a.voted]!==undefined)counts[a.voted]++;});
+  });
+  var sorted=Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,3);
+  var scoreHtml=sorted.some(function(e){return e[1]>0;})
+    ?sorted.filter(function(e){return e[1]>0;}).map(function(e,i){
+        return "<div class='active-score-item'>"
+          +"<div class='active-score-name'>"+(["🥇","🥈","🥉"][i]||"")+" "+e[0]+"</div>"
+          +"<div class='active-score-pts'>"+e[1]+" vote"+(e[1]>1?"s":"")+"</div></div>";
+      }).join("")
+    :"<div style='font-size:13px;color:rgba(255,255,255,0.3);font-weight:500;padding:4px 0'>Aucun vote encore</div>";
+
+  /* Participants */
+  var playersHtml=s.participants.map(function(p){
+    var done=answered.indexOf(p)>=0;
+    return "<span class='active-player-chip "+(done?"done":"wait")+"'>"+p+(done?" ✓":"")+"</span>";
+  }).join("");
+
+  /* Timer */
+  var remaining=s.expiresAt?timeRemaining(s.expiresAt):null;
+  var timerHtml=remaining?"<div style='font-size:11px;color:rgba(255,255,255,0.3);font-weight:600;margin-bottom:12px'>⏱ "+remaining+"</div>":"";
+
+  /* Bouton action */
+  var played=localStorage.getItem("qdns_played_"+s.binId);
+  var btnLabel=played?"Voir les résultats en direct →":"Rejoindre →";
+  var btnAction=played?"openLiveResults('"+s.binId+"')"  :"loadSession('"+s.binId+"')";
+
+  card.innerHTML="<div class='active-sess-accent'></div>"
+    +"<div class='active-sess-name'>"+s.name+"</div>"
+    +timerHtml
+    +"<div class='active-sess-progress'>"
+      +"<span style='font-size:11px;font-weight:700;color:#C8F135;letter-spacing:1px;text-transform:uppercase'>"+answered.length+" / "+total+"</span>"
+      +"<div class='active-sess-track'><div class='active-sess-fill' style='width:"+pct+"%'></div></div>"
+      +"<span class='active-sess-pct'>"+pct+"%</span>"
+    +"</div>"
+    +"<div class='active-score-row'>"+scoreHtml+"</div>"
+    +"<div class='active-players-row'>"+playersHtml+"</div>"
+    +"<button class='btn-lime' onclick=\""+btnAction+"\">"+btnLabel+"</button>"
+    +"<button class='btn-danger' style='margin-top:8px' onclick='clearGlobalActiveSession()'>Changer de partie en cours</button>";
+}
   setLoading("Chargement des résultats...");
   apiRead(binId,function(err,data){
     if(err||!data){showScreen("screen-home");alert("Impossible de charger les résultats.");return;}
@@ -1288,7 +1374,7 @@ function createSession(){
   if(validQs.length<3){errEl.innerHTML="<div class='error-box'>Ajoutez au moins 3 questions.</div>";return;}
   setLoading("Création du sondage...");
   var code=generateCode();
-  var session={name:name,code:code,participants:participants,questions:validQs,answers:{},comments:[],createdAt:Date.now(),closed:false};
+  var session={name:name,code:code,participants:participants,questions:validQs,answers:{},comments:[],createdAt:Date.now(),expiresAt:Date.now()+15*60*60*1000,closed:false};
   apiCreate(session,function(err,res){
     if(err||!res.metadata){showScreen("screen-create");document.getElementById("create-error").innerHTML="<div class='error-box'>Erreur réseau. Réessayez.</div>";return;}
     var binId=res.metadata.id;session.binId=binId;currentSession=session;
@@ -1303,6 +1389,11 @@ function createSession(){
 function showJoinScreen(){
   var s=currentSession;
   setNavCode(s.code);
+  /* Auto-fermeture si expiré */
+  if(s.expiresAt&&Date.now()>s.expiresAt&&!s.closed){
+    s.closed=true;
+    apiUpdate(s.binId,s,function(){});
+  }
   if(s.closed){
     document.getElementById("join-session-info").innerHTML="<div class='error-box' style='font-size:16px;padding:20px'>Ce sondage est fermé.</div>";
     document.getElementById("join-error").innerHTML="";
