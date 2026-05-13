@@ -1924,11 +1924,9 @@ function renderAdminHistory(stats,binId){
         +"<div class='lbl' style='margin-bottom:10px'>Commentaires</div>"
         +"<div class='hist-comments-wrap'>"+commentsHtml+"</div>"
         +"<div class='adm-controls'>"
-          +"<button class='adm-btn' onclick='loadSessionDetails(\""+s.binId+"\","+idx+")' id='detail-btn-"+idx+"'>📊 Détail des réponses</button>"
           +"<button class='adm-btn adm-btn-warn' onclick='adminClose(\""+s.binId+"\")'>Fermer</button>"
           +"<button class='adm-btn adm-btn-danger' onclick='adminDeleteSession(\""+binId+"\","+idx+")'>Supprimer</button>"
         +"</div>"
-        +"<div class='detail-wrap' id='detail-"+idx+"' style='display:none'></div>"
       +"</div>"
     +"</div>";
   }).join("");
