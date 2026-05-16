@@ -419,7 +419,6 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
     <div class="nav">
       <button class="nav-logo" onclick="goHome()">Qui de nous</button>
       <div class="nav-right" id="nav-right">
-        <button class="nav-back" onclick="showIdeas()">💡 Idées</button>
         <button class="nav-back" onclick="showStats()">Stats</button>
         <button class="nav-back" onclick="showAdmin()">Admin</button>
       </div>
@@ -1010,7 +1009,8 @@ function showScreen(id){
 function setLoading(msg){document.getElementById("loading-msg").textContent=msg||"Chargement...";showScreen("screen-loading");}
 function setNavDefault(){
   document.getElementById("nav-right").innerHTML=
-    "<button class='nav-back' onclick='showStats()'>Stats</button>"
+    "<button class='nav-back' onclick='showIdeas()'>💡 Idées</button>"
+    +"<button class='nav-back' onclick='showStats()'>Stats</button>"
     +"<button class='nav-back' onclick='showAdmin()'>Admin</button>";
 }
 function setNavCode(code){
