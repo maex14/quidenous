@@ -1378,13 +1378,12 @@ function showJoinScreen(){
     s.closed=true;
     apiUpdate(s.binId,s,function(){});
   }
+  /* Sondage fermé → afficher les résultats directement (lecture seule) */
   if(s.closed){
-    document.getElementById("join-session-info").innerHTML="<div class='error-box' style='font-size:16px;padding:20px'>Ce sondage est fermé.</div>";
-    document.getElementById("join-error").innerHTML="";
-    document.getElementById("pseudo-grid").innerHTML="";
-    document.getElementById("join-pseudo-input").style.display="none";
-    document.querySelector("#screen-join .btn-lime").style.display="none";
-    showScreen("screen-join");return;
+    /* Récupère le pseudo si on a déjà joué */
+    myPseudo=localStorage.getItem("qdns_played_"+s.binId)||"";
+    showResultsScreen();
+    return;
   }
   var alreadyKey="qdns_played_"+s.binId;
   var played=localStorage.getItem(alreadyKey);
@@ -1575,8 +1574,17 @@ function renderResultsCounts(s){
   var liveBar=document.getElementById("res-live-bar");
   if(liveBar){
     liveBar.style.display="block";
-    document.getElementById("res-progress-txt").textContent=answered+" / "+total+" ont répondu"+(allDone?" ✓":"");
-    document.getElementById("res-progress-fill").style.width=Math.round(answered/total*100)+"%";
+    var isClosed=s.closed||(s.expiresAt&&Date.now()>s.expiresAt);
+    if(isClosed){
+      document.getElementById("res-progress-txt").textContent="Sondage terminé · "+answered+" / "+total+" ont répondu";
+      document.getElementById("res-progress-fill").style.width=Math.round(answered/total*100)+"%";
+      /* Remplacer le point pulsant par un badge statique */
+      var pill=liveBar.querySelector(".live-pill");
+      if(pill)pill.innerHTML="<span style='width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);display:inline-block;flex-shrink:0'></span>Terminé";
+    } else {
+      document.getElementById("res-progress-txt").textContent=answered+" / "+total+" ont répondu"+(allDone?" ✓":"");
+      document.getElementById("res-progress-fill").style.width=Math.round(answered/total*100)+"%";
+    }
     var shareUrl=window.location.href.split("?")[0]+"?code="+s.binId;
     document.getElementById("res-share-url").textContent=shareUrl;
   }
@@ -1639,18 +1647,20 @@ function showResultsScreen(){
   renderRecap(s);
   _commentsCache=[];
   setupCommentInput();loadComments();
-  /* Polling résultats live toutes les 5s */
+  /* Polling résultats live toutes les 5s (seulement si le sondage est encore ouvert) */
   if(window._liveResultsInterval)clearInterval(window._liveResultsInterval);
-  window._liveResultsInterval=setInterval(function(){
-    if(!currentSession||!currentSession.binId)return;
-    apiReadCached(currentSession.binId,function(err,fresh){
-      if(err||!fresh)return;
-      fresh.binId=currentSession.binId;
-      currentSession=fresh;
-      renderResultsCounts(fresh);
-      renderRecap(fresh);
-    },true/* forceRefresh pour le polling live */);
-  },5000);
+  if(!currentSession.closed){
+    window._liveResultsInterval=setInterval(function(){
+      if(!currentSession||!currentSession.binId)return;
+      apiReadCached(currentSession.binId,function(err,fresh){
+        if(err||!fresh)return;
+        fresh.binId=currentSession.binId;
+        currentSession=fresh;
+        renderResultsCounts(fresh);
+        renderRecap(fresh);
+      },true);
+    },5000);
+  }
   /* Polling commentaires toutes les 15s */
   if(window._commentInterval)clearInterval(window._commentInterval);
   window._commentInterval=setInterval(loadComments,15000);
