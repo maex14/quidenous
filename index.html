@@ -355,7 +355,39 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
 .load-dot:nth-child(3){animation-delay:.36s}
 @keyframes dotpulse{0%,80%,100%{opacity:.2;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
 .load-msg{font-size:13px;color:rgba(255,255,255,0.3);font-weight:500;margin-top:18px}
-/* ADMIN DETAIL */
+/* IDEAS / PROPOSITIONS */
+.ideas-wrap{max-width:580px;margin:0 auto;padding:24px 20px 80px}
+.ideas-hero{margin-bottom:28px}
+.ideas-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.5px;margin-bottom:6px}
+.ideas-sub{font-size:14px;color:rgba(255,255,255,0.4);font-weight:500}
+.ideas-form{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;margin-bottom:28px}
+.ideas-form-title{font-size:12px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.ideas-name-row{display:flex;gap:10px;margin-bottom:10px}
+.ideas-name-input{flex:0 0 160px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;color:#fff;font-family:inherit;outline:none}
+.ideas-name-input::placeholder{color:rgba(255,255,255,0.25)}
+.ideas-name-input:focus{border-color:rgba(200,241,53,0.4)}
+.ideas-textarea{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:500;color:#fff;font-family:inherit;outline:none;resize:vertical;min-height:80px;margin-bottom:12px}
+.ideas-textarea::placeholder{color:rgba(255,255,255,0.25)}
+.ideas-textarea:focus{border-color:rgba(200,241,53,0.4)}
+.ideas-submit{background:#C8F135;color:#0e0e0e;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.ideas-submit:disabled{opacity:.4;cursor:not-allowed}
+.ideas-feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ideas-feed-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase}
+.ideas-count-badge{font-size:12px;font-weight:700;color:rgba(200,241,53,0.7);background:rgba(200,241,53,0.1);border:0.5px solid rgba(200,241,53,0.2);border-radius:999px;padding:3px 10px}
+.idea-card{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px;margin-bottom:10px;display:flex;gap:12px;transition:border-color .15s}
+.idea-card:hover{border-color:rgba(255,255,255,0.16)}
+.idea-av{width:36px;height:36px;border-radius:50%;background:rgba(200,241,53,0.12);border:0.5px solid rgba(200,241,53,0.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#C8F135;flex-shrink:0}
+.idea-body{flex:1;min-width:0}
+.idea-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.idea-pseudo{font-size:13px;font-weight:700;color:#fff}
+.idea-date{font-size:11px;color:rgba(255,255,255,0.3);font-weight:500}
+.idea-text{font-size:14px;color:rgba(255,255,255,0.75);font-weight:500;line-height:1.5;margin-bottom:10px;word-break:break-word}
+.idea-actions{display:flex;gap:8px;align-items:center}
+.idea-vote-btn{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.12);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;font-family:inherit}
+.idea-vote-btn:hover{background:rgba(200,241,53,0.1);border-color:rgba(200,241,53,0.25);color:#C8F135}
+.idea-vote-btn.voted{background:rgba(200,241,53,0.12);border-color:rgba(200,241,53,0.35);color:#C8F135}
+.ideas-empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.25);font-size:14px;font-weight:500}
+.ideas-empty-emoji{font-size:32px;margin-bottom:10px}
 .detail-wrap{margin-top:14px;border-top:0.5px solid rgba(255,255,255,0.08);padding-top:14px}
 .detail-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
 .detail-q-block{margin-bottom:16px}
@@ -387,6 +419,7 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
     <div class="nav">
       <button class="nav-logo" onclick="goHome()">Qui de nous</button>
       <div class="nav-right" id="nav-right">
+        <button class="nav-back" onclick="showIdeas()">💡 Idées</button>
         <button class="nav-back" onclick="showStats()">Stats</button>
         <button class="nav-back" onclick="showAdmin()">Admin</button>
       </div>
@@ -592,6 +625,33 @@ body{background:#000;font-family:'Space Grotesk',sans-serif;-webkit-font-smoothi
           </div>
           <div id="comment-input-area"></div>
         </div>
+        <button class="btn-lime-outline" onclick="goHome()" style="margin-top:24px">Retour à l'accueil</button>
+      </div>
+    </div>
+
+    <!-- IDEAS -->
+    <div id="screen-ideas" class="screen">
+      <div class="ideas-wrap">
+        <div class="ideas-hero">
+          <div class="hero-tag">Communauté</div>
+          <div class="ideas-title">💡 Idées & suggestions</div>
+          <p class="ideas-sub">Propose une amélioration, vote pour celles que tu aimes.</p>
+        </div>
+        <!-- Formulaire -->
+        <div class="ideas-form">
+          <div class="ideas-form-title">Nouvelle proposition</div>
+          <div class="ideas-name-row">
+            <input class="ideas-name-input" id="idea-pseudo" placeholder="Ton prénom" maxlength="30">
+          </div>
+          <textarea class="ideas-textarea" id="idea-text" placeholder="Décris ton idée ou suggestion..." maxlength="500" rows="3"></textarea>
+          <button class="ideas-submit" id="idea-submit-btn" onclick="submitIdea()">Envoyer →</button>
+        </div>
+        <!-- Feed -->
+        <div class="ideas-feed-header">
+          <div class="ideas-feed-label">Toutes les idées</div>
+          <div class="ideas-count-badge" id="ideas-count">0</div>
+        </div>
+        <div id="ideas-feed"><div class="loading-wrap" style="padding:24px"><div class="spinner"></div></div></div>
         <button class="btn-lime-outline" onclick="goHome()" style="margin-top:24px">Retour à l'accueil</button>
       </div>
     </div>
@@ -960,17 +1020,122 @@ function setNavCode(code){
 }
 
 /* ════════ HOME ════════ */
+/* ════════ IDEAS / PROPOSITIONS ════════ */
+function loadIdeas(){
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId){renderIdeas([]);return;}
+    apiReadCached(gBinId,function(err,stats){
+      if(err||!stats){renderIdeas([]);return;}
+      renderIdeas(stats.proposals||[]);
+    },true);
+  });
+}
+function renderIdeas(proposals){
+  var feed=document.getElementById("ideas-feed");
+  var count=document.getElementById("ideas-count");
+  if(!feed)return;
+  if(count)count.textContent=proposals.length;
+  if(!proposals.length){
+    feed.innerHTML="<div class='ideas-empty'><div class='ideas-empty-emoji'>💭</div>Aucune idée pour l'instant.<br>Soyez le premier à proposer quelque chose !</div>";
+    return;
+  }
+  var myVotes=JSON.parse(localStorage.getItem("qdns_idea_votes")||"{}");
+  feed.innerHTML=proposals.slice().sort(function(a,b){return b.date-a.date;}).map(function(idea){
+    var d=new Date(idea.date);
+    var dateStr=d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"})+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    var voted=!!myVotes[idea.id];
+    var voteCount=(idea.votes||[]).length;
+    return "<div class='idea-card' id='idea-"+idea.id+"'>"
+      +"<div class='idea-av'>"+escIdea(idea.pseudo.slice(0,2).toUpperCase())+"</div>"
+      +"<div class='idea-body'>"
+        +"<div class='idea-meta'>"
+          +"<span class='idea-pseudo'>"+escIdea(idea.pseudo)+"</span>"
+          +"<span class='idea-date'>"+dateStr+"</span>"
+        +"</div>"
+        +"<div class='idea-text'>"+escIdea(idea.text)+"</div>"
+        +"<div class='idea-actions'>"
+          +"<button class='idea-vote-btn"+(voted?" voted":"")+"' onclick='voteIdea(\""+idea.id+"\")'>"
+            +"👍 <span id='vc-"+idea.id+"'>"+voteCount+"</span> vote"+(voteCount>1?"s":"")
+          +"</button>"
+        +"</div>"
+      +"</div>"
+    +"</div>";
+  }).join("");
+}
+function escIdea(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");}
+function submitIdea(){
+  var pseudo=document.getElementById("idea-pseudo").value.trim();
+  var text=document.getElementById("idea-text").value.trim();
+  var btn=document.getElementById("idea-submit-btn");
+  if(!pseudo){alert("Indique ton prénom avant d'envoyer.");return;}
+  if(text.length<5){alert("Développe un peu ton idée !");return;}
+  btn.disabled=true;btn.textContent="Envoi...";
+  var idea={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),pseudo:pseudo,text:text,date:Date.now(),votes:[]};
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId){btn.disabled=false;btn.textContent="Envoyer →";alert("Erreur réseau.");return;}
+    apiRead(gBinId,function(err,stats){
+      if(err||!stats){btn.disabled=false;btn.textContent="Envoyer →";alert("Erreur réseau.");return;}
+      if(!stats.proposals)stats.proposals=[];
+      stats.proposals.unshift(idea);
+      if(stats.proposals.length>200)stats.proposals.pop();
+      apiUpdate(gBinId,stats,function(err2){
+        btn.disabled=false;btn.textContent="Envoyer →";
+        if(err2){alert("Erreur lors de l'envoi.");return;}
+        document.getElementById("idea-text").value="";
+        localStorage.setItem("qdns_idea_pseudo",pseudo);
+        renderIdeas(stats.proposals);
+      });
+    });
+  });
+}
+function voteIdea(id){
+  var myVotes=JSON.parse(localStorage.getItem("qdns_idea_votes")||"{}");
+  if(myVotes[id])return;
+  var voter=localStorage.getItem("qdns_idea_pseudo")||("visiteur_"+Math.random().toString(36).slice(2,6));
+  getOrCreateGlobalBin(function(gBinId){
+    if(!gBinId)return;
+    apiRead(gBinId,function(err,stats){
+      if(err||!stats||!stats.proposals)return;
+      var idea=stats.proposals.find(function(p){return p.id===id;});
+      if(!idea)return;
+      if(!idea.votes)idea.votes=[];
+      if(idea.votes.indexOf(voter)>=0)return;
+      idea.votes.push(voter);
+      myVotes[id]=true;
+      localStorage.setItem("qdns_idea_votes",JSON.stringify(myVotes));
+      var vcEl=document.getElementById("vc-"+id);
+      if(vcEl)vcEl.textContent=idea.votes.length;
+      var vbtn=document.querySelector("#idea-"+id+" .idea-vote-btn");
+      if(vbtn)vbtn.classList.add("voted");
+      apiUpdate(gBinId,stats,function(){});
+    });
+  });
+}
+function showIdeas(){
+  if(window._liveResultsInterval){clearInterval(window._liveResultsInterval);window._liveResultsInterval=null;}
+  if(window._homeInterval){clearInterval(window._homeInterval);window._homeInterval=null;}
+  setNavDefault();
+  var saved=localStorage.getItem("qdns_idea_pseudo");
+  var el=document.getElementById("idea-pseudo");if(el&&saved)el.value=saved;
+  loadIdeas();
+  if(window._ideasInterval)clearInterval(window._ideasInterval);
+  window._ideasInterval=setInterval(function(){
+    if(document.getElementById("screen-ideas").classList.contains("active"))loadIdeas();
+  },20000);
+  showScreen("screen-ideas");
+}
+
 function goHome(){
   currentSession=null;myPseudo="";currentQ=0;selectedPlayer=null;myAnswers=[];_commentsCache=[];
   if(window._waitingInterval){clearInterval(window._waitingInterval);window._waitingInterval=null;}
   if(window._commentInterval){clearInterval(window._commentInterval);window._commentInterval=null;}
   if(window._liveResultsInterval){clearInterval(window._liveResultsInterval);window._liveResultsInterval=null;}
+  if(window._ideasInterval){clearInterval(window._ideasInterval);window._ideasInterval=null;}
   if(window._homeInterval){clearInterval(window._homeInterval);window._homeInterval=null;}
   setNavDefault();
   renderLocalSessions();
   loadActiveSession();
   showScreen("screen-home");
-  /* Refresh la partie en cours toutes les 8s quand on est sur la home */
   window._homeInterval=setInterval(function(){
     if(document.getElementById("screen-home").classList.contains("active"))loadActiveSession();
   },8000);
